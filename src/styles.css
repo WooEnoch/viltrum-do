@@ -131,6 +131,12 @@ button { color: inherit; }
 .modal label { gap: 7px; font-size: 13px; font-weight: 500; }
 .modal input, .modal select { width: 100%; height: 44px; padding: 0 12px; border: 1px solid var(--stroke); border-radius: 8px; outline: 0; background: #fff; color: var(--black); }
 .modal input:focus, .modal select:focus { border-color: #b3c3fd; box-shadow: 0 0 0 3px rgba(179,195,253,.3); }
+.schedule-picker { height: 44px; padding: 0 12px; position: relative; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--stroke); border-radius: 8px; background: #fff; font-size: 14px; font-weight: 400; cursor: pointer; }
+.schedule-picker:focus-within { border-color: #b3c3fd; box-shadow: 0 0 0 3px rgba(179,195,253,.3); }
+.schedule-picker input { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; opacity: 0; cursor: pointer; }
+.calendar-mark { width: 16px; height: 16px; position: relative; border: 1.5px solid var(--light-grey); border-radius: 3px; }
+.calendar-mark::before { content: ''; position: absolute; left: -1.5px; right: -1.5px; top: 3px; border-top: 1.5px solid var(--light-grey); }
+.calendar-mark::after { content: ''; width: 7px; height: 2px; position: absolute; left: 3px; top: -3px; border-left: 1.5px solid var(--light-grey); border-right: 1.5px solid var(--light-grey); }
 .subtask-builder { margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; border: 0; }
 .subtask-builder legend { width: 100%; margin-bottom: 7px; padding: 0; display: flex; align-items: center; justify-content: space-between; font-size: 13px; font-weight: 500; }
 .subtask-builder legend small { color: var(--light-grey); font-size: 11px; font-weight: 400; }
@@ -152,6 +158,11 @@ button { color: inherit; }
   .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
+@media (max-width: 700px) {
+  .welcome-row { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .welcome-row .add-button { width: 100%; }
+}
+
 @media (max-width: 600px) {
   .topbar { padding: 16px 18px 72px; }
   .brand span { font-size: 16px; }
@@ -160,7 +171,6 @@ button { color: inherit; }
   .avatar { width: 40px; height: 40px; }
   .search-box { top: 70px; width: calc(100% - 36px); }
   .dashboard { width: calc(100% - 36px); margin-top: 44px; gap: 30px; }
-  .welcome-row { align-items: flex-start; gap: 16px; }
   .welcome-row h1 { font-size: 18px; line-height: 26px; }
   .welcome-row p { font-size: 15px; line-height: 24px; }
   .add-button { padding: 11px 14px; }

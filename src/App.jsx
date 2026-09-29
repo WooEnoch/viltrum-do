@@ -2,6 +2,29 @@ import { useMemo, useState } from 'react';
 
 const ASSET = '/assets/';
 
+const getTodayValue = () => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const getScheduleGroup = (date) => {
+  if (date < getTodayValue()) return 'overdue';
+  if (date > getTodayValue()) return 'scheduled';
+  return 'today';
+};
+
+const formatScheduleDate = (date) => {
+  if (date === getTodayValue()) return 'Today';
+  return new Date(`${date}T00:00:00`).toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+};
+
 const initialTasks = [
   { id: 1, title: 'Torment Mark Grayson', priority: 'high', group: 'today' },
   {
@@ -44,6 +67,7 @@ function App() {
   const [query, setQuery] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [draftSubtasks, setDraftSubtasks] = useState(['']);
+  const [draftDueDate, setDraftDueDate] = useState(getTodayValue);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [allExpandedIds, setAllExpandedIds] = useState(() => new Set());
 
@@ -98,6 +122,7 @@ function App() {
 
   const openAddModal = () => {
     setDraftSubtasks(['']);
+    setDraftDueDate(getTodayValue());
     setIsAdding(true);
   };
 
@@ -120,6 +145,8 @@ function App() {
     const form = new FormData(event.currentTarget);
     const title = String(form.get('title') || '').trim();
     if (!title) return;
+    const dueDate = String(form.get('dueDate') || getTodayValue());
+    const group = getScheduleGroup(dueDate);
     const createdAt = Date.now();
     const subtasks = draftSubtasks
       .map((subtask) => subtask.trim())
@@ -129,12 +156,13 @@ function App() {
       id: createdAt,
       title,
       priority: form.get('priority'),
-      group: form.get('group'),
+      group,
+      dueDate,
       expanded: subtasks.length > 0,
       ...(subtasks.length > 0 ? { subtasks } : {}),
     }]);
     setIsAdding(false);
-    setActiveFilter(String(form.get('group')));
+    setActiveFilter(group);
   };
 
   const activeMeta = filters.find((filter) => filter.id === activeFilter);
@@ -290,11 +318,17 @@ function App() {
               <div className="form-row">
                 <label>
                   Schedule
-                  <select name="group" defaultValue={activeFilter === 'all' ? 'today' : activeFilter}>
-                    <option value="today">Today</option>
-                    <option value="scheduled">Scheduled</option>
-                    <option value="overdue">Overdue</option>
-                  </select>
+                  <span className="schedule-picker">
+                    <span>{formatScheduleDate(draftDueDate)}</span>
+                    <span className="calendar-mark" aria-hidden="true" />
+                    <input
+                      type="date"
+                      name="dueDate"
+                      value={draftDueDate}
+                      aria-label="Choose schedule date"
+                      onChange={(event) => setDraftDueDate(event.target.value || getTodayValue())}
+                    />
+                  </span>
                 </label>
                 <label>
                   Priority
