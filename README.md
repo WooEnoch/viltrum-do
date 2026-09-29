@@ -1,6 +1,6 @@
 # Viltrum-do
 
-An interactive task dashboard implemented from the supplied Figma design.
+TO-DO app for the viltrumites.
 
 ## Run locally
 
