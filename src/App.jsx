@@ -132,13 +132,32 @@ function PageHeading({ eyebrow, title, description, action }) {
 }
 
 function ProductCard({ product, favorite, onFavorite, onQuickAdd }) {
+  const [quickAddOpen, setQuickAddOpen] = useState(false);
+  const [addingSize, setAddingSize] = useState('');
+
+  const selectSize = async (size) => {
+    setAddingSize(size);
+    const added = await onQuickAdd(product.id, size);
+    setAddingSize('');
+    if (added) setQuickAddOpen(false);
+  };
+
   return (
-    <article className="product-card">
+    <article className={`product-card${quickAddOpen ? ' quick-add-open' : ''}`}>
       <div className="product-image">
         <a href={`#/product/${product.id}`} aria-label={`View ${product.name}`}><img src={`${ASSET}${product.image}`} alt={product.name} /></a>
         {product.isNew && <span className="new-badge">NEW</span>}
         <IconButton src="heart-product.svg" label={favorite ? `Remove ${product.name} from saved items` : `Save ${product.name}`} className={`favorite${favorite ? ' active' : ''}`} pressed={favorite} onClick={() => onFavorite(product.id)} />
-        <button className="quick-add" type="button" onClick={() => onQuickAdd(product.id)}>QUICK ADD</button>
+        {quickAddOpen ? (
+          <div className="quick-size-picker" role="group" aria-label={`Choose a size for ${product.name}`}>
+            <span>SELECT SIZE</span>
+            <div className="size-options">
+              {product.sizes.map((size) => <button type="button" key={size} onClick={() => selectSize(size)} disabled={Boolean(addingSize)}>{addingSize === size ? '…' : size}</button>)}
+            </div>
+          </div>
+        ) : (
+          <button className="quick-add" type="button" onClick={() => setQuickAddOpen(true)} disabled={!product.sizes.length}>{product.sizes.length ? 'QUICK ADD' : 'SOLD OUT'}</button>
+        )}
       </div>
       <div className="product-meta"><div><a href={`#/product/${product.id}`}><h3>{product.name}</h3></a><strong>{formatPrice(product.price)}</strong></div><p>{product.color}</p></div>
     </article>
@@ -314,9 +333,14 @@ function App() {
   };
   const addToCart = async (id, size) => {
     const product = products.find((item) => item.id === id);
-    if (!product?.sizes.length) { setAppError('This piece is currently sold out.'); return; }
-    try { setCart(await api('/api/cart', { method: 'POST', body: JSON.stringify({ productId: id, size: size || product.sizes[0], quantity: 1 }) })); }
-    catch (error) { setAppError(error.message); }
+    if (!product?.sizes.length) { setAppError('This piece is currently sold out.'); return false; }
+    try {
+      setCart(await api('/api/cart', { method: 'POST', body: JSON.stringify({ productId: id, size: size || product.sizes[0], quantity: 1 }) }));
+      return true;
+    } catch (error) {
+      setAppError(error.message);
+      return false;
+    }
   };
   const updateQuantity = async (itemId, quantity) => {
     try { setCart(await api('/api/cart', { method: 'PATCH', body: JSON.stringify({ itemId, quantity }) })); }

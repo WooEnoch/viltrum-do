@@ -9,7 +9,7 @@ export async function GET(request) {
   if (!customer) return NextResponse.redirect(new URL('/#/signin', url.origin));
   const store = await cookies();
   await mergeGuestCart(customer.id, store.get(GUEST_CART_COOKIE)?.value);
-  const target = url.searchParams.get('next') === 'checkout' ? '/#/checkout' : '/#/account';
+  const target = url.searchParams.get('next') === 'checkout' ? '/#/checkout' : '/#/home';
   const response = NextResponse.redirect(new URL(target, url.origin));
   response.cookies.delete(GUEST_CART_COOKIE);
   return response;

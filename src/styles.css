@@ -93,6 +93,13 @@ img { display: block; max-width: 100%; }
 .quick-add { width: 100%; padding: 12px; position: absolute; right: 0; bottom: 0; left: 0; border: 0; color: white; background: rgba(19,91,236,.8); font-family: Arial, sans-serif; font-size: 16px; cursor: pointer; opacity: 0; pointer-events: none; transform: translateY(100%); transition: opacity 180ms ease, transform 180ms ease, background 180ms ease; }
 .product-card:hover .quick-add, .product-card:focus-within .quick-add { opacity: 1; pointer-events: auto; transform: translateY(0); }
 .quick-add:hover { background: var(--blue); }
+.quick-add:disabled { cursor: default; }
+.quick-size-picker { padding: 14px 16px 16px; position: absolute; right: 0; bottom: 0; left: 0; z-index: 2; border-top: 1px solid #d8d8d8; background: rgba(255,255,255,.96); }
+.quick-size-picker > span { display: block; margin-bottom: 10px; font-family: Arial, sans-serif; font-size: 12px; }
+.quick-size-picker .size-options { flex-wrap: nowrap; }
+.quick-size-picker .size-options button { min-width: 0; height: 38px; flex: 1; padding: 0 8px; }
+.quick-size-picker .size-options button:hover, .quick-size-picker .size-options button:focus-visible { border-color: var(--blue); color: white; background: var(--blue); }
+.quick-size-picker .size-options button:disabled { cursor: wait; }
 .product-meta { margin-top: 8px; }
 .product-meta > div { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .product-meta h3, .product-meta strong { margin: 0; font-size: 16px; font-weight: 400; line-height: 24px; }
