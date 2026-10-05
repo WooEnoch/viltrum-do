@@ -1,14 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
 import { api, clearToken, getToken, saveToken } from './api';
+import { configureGoogle, getGoogleIdToken, signOutGoogle } from './google-auth';
 import type { Cart, CartItem, Delivery, Order, Product, User } from './types';
 
 const EMPTY_CART: Cart = { items: [], count: 0, subtotal: 0 };
 const GUEST_CART_KEY = 'nikkibee_guest_cart_v1';
 const webClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
-if (webClientId) GoogleSignin.configure({ webClientId, offlineAccess: false });
+if (webClientId) configureGoogle(webClientId);
 
 type StoreValue = {
   products: Product[]; cart: Cart; favourites: string[]; orders: Order[]; user: User | null;
@@ -84,10 +84,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async () => {
     if (!webClientId) throw new Error('Google Sign-In needs EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID.');
-    await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-    const response = await GoogleSignin.signIn();
-    if (response.type !== 'success' || !response.data.idToken) return;
-    const auth = await api<{ token: string; user: User }>('/api/mobile/auth/google', { method: 'POST', body: JSON.stringify({ idToken: response.data.idToken }) });
+    const idToken = await getGoogleIdToken();
+    if (!idToken) return;
+    const auth = await api<{ token: string; user: User }>('/api/mobile/auth/google', { method: 'POST', body: JSON.stringify({ idToken }) });
     await saveToken(auth.token); setUser(auth.user);
     const guestItems = cart.items;
     for (const item of guestItems) await api('/api/cart', { method: 'POST', body: JSON.stringify({ productId: item.productId, size: item.size, quantity: item.quantity }) });
@@ -97,7 +96,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     try { await api('/api/mobile/auth/session', { method: 'DELETE' }); } catch {}
-    await Promise.all([clearToken(), GoogleSignin.signOut().catch(() => null)]);
+    await Promise.all([clearToken(), signOutGoogle()]);
     setUser(null); setFavourites([]); setOrders([]); setCart(EMPTY_CART);
   };
 

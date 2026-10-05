@@ -1,12 +1,9 @@
-import * as SecureStore from 'expo-secure-store';
+import { clearToken, getToken, saveToken } from './token-storage';
 
 export const API_ORIGIN = (process.env.EXPO_PUBLIC_API_URL || 'https://viltrum-do-isb3.vercel.app').replace(/\/$/, '');
-const TOKEN_KEY = 'nikkibee_mobile_session';
 
 export const imageUrl = (path: string) => `${API_ORIGIN}/assets/nikkibee/${path}`;
-export const getToken = () => SecureStore.getItemAsync(TOKEN_KEY);
-export const saveToken = (token: string) => SecureStore.setItemAsync(TOKEN_KEY, token, { keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY });
-export const clearToken = () => SecureStore.deleteItemAsync(TOKEN_KEY);
+export { clearToken, getToken, saveToken };
 
 export async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = await getToken();
