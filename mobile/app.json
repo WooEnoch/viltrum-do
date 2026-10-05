@@ -26,6 +26,13 @@
       "expo-font",
       "@react-native-google-signin/google-signin",
       "expo-router"
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "4e9011ee-1367-4626-b0f2-1c7f27b0187c"
+      }
+    },
+    "owner": "nifemi99"
   }
 }
