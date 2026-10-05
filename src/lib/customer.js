@@ -3,8 +3,11 @@ import { eq } from 'drizzle-orm';
 import { auth } from '@/auth';
 import { getDb } from '@/db/client';
 import { customers } from '@/db/schema';
+import { getMobileSession } from '@/lib/mobile-auth';
 
 export async function getCurrentCustomer() {
+  const mobile = await getMobileSession();
+  if (mobile?.customer) return mobile.customer;
   const session = await auth();
   if (!session?.user?.id || !session.user.email) return null;
   const db = getDb();

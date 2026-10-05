@@ -65,6 +65,15 @@ export const customers = pgTable('customers', {
   ...timestamps,
 }, (table) => [index('customers_email_idx').on(table.email)]);
 
+export const mobileSessions = pgTable('mobile_sessions', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  customerId: uuid('customer_id').notNull().references(() => customers.id, { onDelete: 'cascade' }),
+  tokenHash: text('token_hash').notNull().unique(),
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+  lastUsedAt: timestamp('last_used_at', { withTimezone: true }).defaultNow().notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+}, (table) => [index('mobile_sessions_customer_idx').on(table.customerId)]);
+
 export const products = pgTable('products', {
   id: uuid('id').defaultRandom().primaryKey(),
   slug: text('slug').notNull().unique(),

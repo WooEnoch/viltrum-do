@@ -1,0 +1,31 @@
+{
+  "expo": {
+    "name": "NikkiBee",
+    "slug": "nikkibee-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "nikkibee",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.nikkibee.store"
+    },
+    "android": {
+      "package": "com.nikkibee.store",
+      "adaptiveIcon": {
+        "backgroundColor": "#F7F4EE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": true
+    },
+    "plugins": [
+      "expo-secure-store",
+      "expo-font",
+      "@react-native-google-signin/google-signin",
+      "expo-router"
+    ]
+  }
+}
